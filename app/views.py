@@ -4,6 +4,7 @@
 from flask import Flask, flash, redirect, \
 	render_template, request, session, url_for, g
 from functools import wraps
+from forms import AddTaskForm
 import sqlite3
 
 app = Flask(__name__)
