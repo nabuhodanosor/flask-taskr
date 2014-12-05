@@ -49,7 +49,7 @@ def login():
 
 @app.route('/tasks/')
 @login_required
-def task():
+def tasks():
 	g.db = connect_db()
 	cur = g.db.execute(
 		'select name, due_date, priority, task_id from tasks where status=1'	
@@ -63,7 +63,7 @@ def task():
 		priority=row[2], task_id=row[3]) for row in cur.fetchall()]
 	g.db.close()
 	return render_template(
-		'tasks.html'
+		'tasks.html',
 		form=AddTaskForm(request.form),
 		open_tasks=open_tasks,
 		closed_tasks=closed_tasks
@@ -72,10 +72,10 @@ def task():
 # Add new tasks:
 @app.route('/add/', methods=['POST'])
 @login_required
-def new_taks():
+def new_task():
 	g.db = connect_db()
 	name = request.form['name']
-	date = request.form['date']
+	date = request.form['due_date']
 	priority = request.form['priority']
 	if not name or not date or not priority:
 		flash("All fields are required. Please try again.")
