@@ -1,26 +1,16 @@
 # db_create.py - sets up and create a database
 
-import sqlite3
-from config import DATABASE_PATH
 
-with sqlite3.connect(DATABASE_PATH) as connection:
-	# get cursor object used to execute SQL commands
-	c = connection.cursor()
+from views import db
+from models import Task
+from datetime import date
 
-	# create the table
-	c.execute("""CREATE TABLE tasks(
-		task_id INTEGER PRIMARY KEY AUTOINCREMENT,
-		name TEXT NOT NULL, 
-		due_date TEXT NOT NULL, 
-		priority INTEGER NOT NULL, 
-		status INTEGER NOT NULL)""")
+# create the database and the db table
+db.create_all()
 
-	# insert dummy data intot the table
-	c.execute(
-		'INSERT INTO tasks (name, due_date, priority, status)'
-		'VALUES("Finish this tutorial", "12/05/2014", 10, 1)'
-	)
-	c.execute(
-		'INSERT INTO tasks (name, due_date, priority, status)'
-		'VALUES("Finish Real Python Course 2", "12/31/2014", 10, 1)'
-	)
+# insert data
+db.session.add(Task("Finish this tutorial", date(2014, 12, 29), 10, 1))
+db.session.add(Task("Finish Real Python", date(2015, 2, 14), 10, 1))
+
+# commit the changes
+db.session.commit() 
