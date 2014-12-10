@@ -8,6 +8,7 @@ from flask import Flask, flash, redirect, \
 from functools import wraps
 from forms import AddTaskForm, RegisterForm, LoginForm
 from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import IntegrityError
 import datetime
 
 #### config ####
@@ -30,10 +31,15 @@ def register():
 				form.email.data,
 				form.password.data,
 			)
-			db.session.add(new_user)
-			db.session.commit()
-			flash('Thanks for registering. Please login.')
-			return redirect(url_for('login'))
+			try:
+				db.session.add(new_user)
+				db.session.commit()
+				flash('Thanks for registering. Please login.')
+				return redirect(url_for('login'))
+			except IntegrityError:
+				error = 'Oh no! That username and/or email already \
+					exist. Please try again.'
+				return render_template('register.html', form=form, error=error)
 		else:
 			return render_template('register.html', form=form, error=error)
 	if request.method == 'GET':
@@ -52,6 +58,7 @@ def login_required(test):
 
 
 @app.route('/logout/')
+@login_required
 def logout():
 	session.pop('logged_in', None)
 	session.pop('user_id', None)
